@@ -8,4 +8,4 @@ project(reflect)
 set(CMAKE_CXX_STANDARD 20)
 
 # 指定生成目标
-add_executable(reflect main.cpp)
+add_executable(reflect meta_macro.h static_reflect.h static_reflect.cpp)

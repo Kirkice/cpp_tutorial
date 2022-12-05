@@ -100,41 +100,41 @@ DEFINE_STRUCT(SceneData,
               (Render) render
 );
 
-int main(int argc, char **argv) {
-    std::stringstream result; // serialize result
-    {
-        SceneData scene_data{
-
-                {-20.0f, 30.0f, 20.0f,
-                        30.0f, -60.0f, -50.0f,
-                        1.0f, 1.0f, 1.0f,
-                        1.0f, 0.957f, 0.839f,
-                        "Direction Light",
-                        true},
-
-                {1.0f, 1.0f, 1.0f,
-                        1.0f,
-                        0.0f,
-                        "Asset/Materials/sky.mat"},
-
-                {"ak47",
-                        0,
-                        "Asset/Materials/ak47.mat",
-                        "Asset/Mesh/ak47.obj",
-                        6.0f, 10.0f, 0.0f,
-                        0.0f, 0.0f, 0.0f,
-                        1.0f, 1.0f, 1.0f}
-
-        };
-        serializeObj(result, scene_data);
-    }
-    std::cout << "serialize scene result:" << std::endl
-              << result.str() << std::endl;
-
-    SceneData scene_data;
-    deserializeObj(result, scene_data);
-    std::cout << "deserialize scene result:" << std::endl;
-    serializeObj(std::cout, scene_data);
-
-    return 0;
-}
+//int main(int argc, char **argv) {
+//    std::stringstream result; // serialize result
+//    {
+//        SceneData scene_data{
+//
+//                {-20.0f, 30.0f, 20.0f,
+//                        30.0f, -60.0f, -50.0f,
+//                        1.0f, 1.0f, 1.0f,
+//                        1.0f, 0.957f, 0.839f,
+//                        "Direction Light",
+//                        true},
+//
+//                {1.0f, 1.0f, 1.0f,
+//                        1.0f,
+//                        0.0f,
+//                        "Asset/Materials/sky.mat"},
+//
+//                {"ak47",
+//                        0,
+//                        "Asset/Materials/ak47.mat",
+//                        "Asset/Mesh/ak47.obj",
+//                        6.0f, 10.0f, 0.0f,
+//                        0.0f, 0.0f, 0.0f,
+//                        1.0f, 1.0f, 1.0f}
+//
+//        };
+//        serializeObj(result, scene_data);
+//    }
+//    std::cout << "serialize scene result:" << std::endl
+//              << result.str() << std::endl;
+//
+//    SceneData scene_data;
+//    deserializeObj(result, scene_data);
+//    std::cout << "deserialize scene result:" << std::endl;
+//    serializeObj(std::cout, scene_data);
+//
+//    return 0;
+//}

@@ -82,6 +82,6 @@ endif()
 # here we add our source code
 add_subdirectory(src)
 # and the documentation
-#if (BUILD_DOCUMENTATION)
-#    add_subdirectory(doc)
-#endif()
+if (BUILD_DOCUMENTATION)
+    add_subdirectory(doc)
+endif()

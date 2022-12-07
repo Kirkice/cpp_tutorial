@@ -40,5 +40,5 @@ void analyse_shader::analyse_code(std::string combine)
     std::string rasterizer_mode_string = "";
     std::string blend_mode_string = "";
     std::string depth_stencil_mode = "";
-    
+
 }

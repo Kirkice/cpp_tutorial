@@ -8,10 +8,18 @@ project(analyse_shader)
 set(CMAKE_CXX_STANDARD 20)
 
 #设置头文件路径
-set(INC_DIR F:/Program Files/boost_1_80_0/)
+set(INC_DIR ../3rd_party/boost_1_80_0/include/)
 
 #引入头文件
 include_directories(${INC_DIR})
 
+#设置链接库路径
+set(LINK_DIR ../3rd_party/boost_1_80_0/lib/)
+
+#引入库文件
+link_directories(${LINK_DIR})
+
 # 指定生成目标
 add_executable(analyse_shader analyse_shader.h analyse_shader.cpp shader_struct.h load_shader.cpp load_shader.h property.cpp property.h main.cpp)
+
+target_link_libraries(analyse_shader libboost_thread-vc142-mt-x64-1_80 libboost_system-vc142-mt-x64-1_80)

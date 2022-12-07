@@ -7,7 +7,9 @@
 #include "load_shader.h"
 #include "shader_struct.h"
 #include "property.h"
-#include "boost"
+#include <boost/algorithm/string.hpp>
+
+using namespace boost;
 
 class analyse_shader {
 public:
@@ -18,7 +20,7 @@ public:
     void analyse();
 
 private:
-    void analyse_code();
+    void analyse_code(std::string combine);
 
 private:
     std::vector<std::string> shader_file_paths;     //  Shader 文件路径

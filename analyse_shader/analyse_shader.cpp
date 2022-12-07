@@ -24,12 +24,21 @@ void analyse_shader::analyse()
             combine.append(x);
             combine.append("!");
         }
-        std::cout<<combine<<std::endl;
+        analyse_code(combine);
         srcFile.close();
     }
 }
 
-void analyse_shader::analyse_code()
+void analyse_shader::analyse_code(std::string combine)
 {
+    //  第一层关键字分割
+    vector<string> part_vector;
+    split(part_vector, combine, is_any_of("---"), token_compress_on);
 
+    std::string name_string = "";
+    std::string tag_string = "";
+    std::string rasterizer_mode_string = "";
+    std::string blend_mode_string = "";
+    std::string depth_stencil_mode = "";
+    
 }

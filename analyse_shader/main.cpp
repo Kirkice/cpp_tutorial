@@ -12,7 +12,7 @@ int main()
     analyse_shader m_analyse_shader = analyse_shader();
     m_analyse_shader.load(path);
     m_analyse_shader.analyse();
- 
+
     system("pause");
     return 0;
 }

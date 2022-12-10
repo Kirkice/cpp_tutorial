@@ -118,6 +118,7 @@ void analyse_shader::analyse_name_part(std::string name_string, Shader* shader)
             if(name_vector.size() > 1)
             {   //  Set Name
                 shader->set_name(trim_copy(name_vector[1]));
+                cout<<"Name: "<<name_vector[1]<<endl;
             }
         }
     }
@@ -125,6 +126,8 @@ void analyse_shader::analyse_name_part(std::string name_string, Shader* shader)
 
 void analyse_shader::analyse_input_data_part(std::string input_data_string, Shader* shader)
 {
+//    State shader_state;
+
     //  Judge Content InputData
     string::size_type stringIdx = input_data_string.find(shader_key_word[1]);
     //  Content "InputData"
@@ -142,30 +145,102 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, Shad
 
             for(int i = 0; i < input_data_vector.size(); i++)
             {
+                std::string current_line_string = input_data_vector[i];
                 //  Content Texture
-                string::size_type texIdx = input_data_vector[i].find(input_data_key_word[0]);
+                string::size_type texIdx = current_line_string.find(input_data_key_word[0]);
                 if(texIdx != string::npos)
                 {
                     //  Split (":")
                     property_data_vector.clear();
-                    split(property_data_vector, input_data_vector[i], is_any_of(":"), token_compress_on);
+                    split(property_data_vector, current_line_string, is_any_of(":"), token_compress_on);
                     if(property_data_vector.size() > 0)
                     {
                         //  Split ("=")
-                        input_data_vector[i] = property_data_vector[1];
+                        std::string new_current_line_string = property_data_vector[1];
                         property_data_vector.clear();
-                        split(property_data_vector, input_data_vector[i], is_any_of("="), token_compress_on);
+                        split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
                         if(property_data_vector.size() > 1)
                         {
+                            std::cout<< trim_copy(property_data_vector[0]) << ":  ";
+                            std::cout<< trim_copy(property_data_vector[1]) << std::endl;
+                            //  set state
+//                            shader_state.add_property<string>(trim_copy(property_data_vector[0]));
+//                            shader_state.set_property<string>(trim_copy(property_data_vector[0]),trim_copy(property_data_vector[1]));
                         }
                     }
                 }
 
-//                string::size_type colorIdx = input_data_vector[i].find(input_data_key_word[1]);
-//
-//                string::size_type intIdx = input_data_vector[i].find(input_data_key_word[2]);
-//
-//                string::size_type floatIdx = input_data_vector[i].find(input_data_key_word[3]);
+                //  Content Color
+                string::size_type colorIdx = current_line_string.find(input_data_key_word[1]);
+                if(colorIdx != string::npos)
+                {
+                    //  Split (":")
+                    property_data_vector.clear();
+                    split(property_data_vector, current_line_string, is_any_of(":"), token_compress_on);
+                    if(property_data_vector.size() > 0)
+                    {
+                        //  Split ("=")
+                        std::string new_current_line_string = property_data_vector[1];
+                        property_data_vector.clear();
+                        split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
+                        if(property_data_vector.size() > 1)
+                        {
+                            std::cout<< trim_copy(property_data_vector[0]) << ":  ";
+                            std::cout<< trim_copy(property_data_vector[1]) << std::endl;
+                            //  set state
+//                            shader_state.add_property<string>(trim_copy(property_data_vector[0]));
+//                            shader_state.set_property<string>(trim_copy(property_data_vector[0]),trim_copy(property_data_vector[1]));
+                        }
+                    }
+                }
+
+                //  Content Int
+                string::size_type intIdx = input_data_vector[i].find(input_data_key_word[2]);
+                if(intIdx != string::npos)
+                {
+                    //  Split (":")
+                    property_data_vector.clear();
+                    split(property_data_vector, current_line_string, is_any_of(":"), token_compress_on);
+                    if(property_data_vector.size() > 0)
+                    {
+                        //  Split ("=")
+                        std::string new_current_line_string = property_data_vector[1];
+                        property_data_vector.clear();
+                        split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
+                        if(property_data_vector.size() > 1)
+                        {
+                            std::cout<< trim_copy(property_data_vector[0]) << ":  ";
+                            std::cout<< trim_copy(property_data_vector[1]) << std::endl;
+                            //  set state
+//                            shader_state.add_property<string>(trim_copy(property_data_vector[0]));
+//                            shader_state.set_property<string>(trim_copy(property_data_vector[0]),trim_copy(property_data_vector[1]));
+                        }
+                    }
+                }
+
+                //  Content Float
+                string::size_type floatIdx = input_data_vector[i].find(input_data_key_word[3]);
+                if(floatIdx != string::npos)
+                {
+                    //  Split (":")
+                    property_data_vector.clear();
+                    split(property_data_vector, current_line_string, is_any_of(":"), token_compress_on);
+                    if(property_data_vector.size() > 0)
+                    {
+                        //  Split ("=")
+                        std::string new_current_line_string = property_data_vector[1];
+                        property_data_vector.clear();
+                        split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
+                        if(property_data_vector.size() > 1)
+                        {
+                            std::cout<< trim_copy(property_data_vector[0]) << ":  ";
+                            std::cout<< trim_copy(property_data_vector[1]) << std::endl;
+                            //  set state
+//                            shader_state.add_property<string>(trim_copy(property_data_vector[0]));
+//                            shader_state.set_property<string>(trim_copy(property_data_vector[0]),trim_copy(property_data_vector[1]));
+                        }
+                    }
+                }
 
             }
         }

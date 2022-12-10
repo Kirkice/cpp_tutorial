@@ -1,4 +1,4 @@
-Name = test
+Name = test;
 ---
 InputData
 {

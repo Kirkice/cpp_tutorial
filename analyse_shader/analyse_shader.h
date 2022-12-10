@@ -7,7 +7,6 @@
 #pragma once
 #include "load_shader.h"
 #include "shader_struct.h"
-#include "property.h"
 #include "Shader.h"
 #include <boost/algorithm/string.hpp>
 
@@ -22,7 +21,11 @@ public:
     void analyse();
 
 private:
+    void erase_enter(std::string& str);
+    std::string character_segmentation(std::string source);
     void analyse_code(std::string combine);
+    void analyse_name_part(std::string name_string, Shader* shader);
+    void analyse_input_data_part(std::string name_string, Shader* shader);
 
 private:
     std::vector<std::string> shader_file_paths;     //  Shader 文件路径

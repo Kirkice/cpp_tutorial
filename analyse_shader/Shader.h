@@ -6,7 +6,6 @@
 #define ANALYSE_SHADER_SHADER_H
 #pragma once
 #include "shader_struct.h"
-#include "property.h"
 
 class Shader {
 

@@ -21,6 +21,7 @@
 #include <map>
 #include <dxgi1_4.h>
 #include <d3d12.h>
+#include "property.h"
 
 //  key word
 const std::vector<std::string> shader_key_word =

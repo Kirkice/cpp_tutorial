@@ -22,7 +22,6 @@ void analyse_shader::analyse()
         while (getline(srcFile, x))    //数字读取方式
         {
             combine.append(x);
-            combine.append("/n");
         }
         analyse_code(combine);
         srcFile.close();
@@ -35,14 +34,21 @@ void analyse_shader::analyse_code(std::string combine)
     vector<string> part_vector;
     split(part_vector, combine, is_any_of("---"), token_compress_on);
 
+    std::string name_string = "";
+    std::string input_data_string = "";
+    std::string tag_string = "";
+    std::string rasterizer_mode_string = "";
+    std::string blend_mode_string = "";
+    std::string depth_stencil_mode = "";
+
     if(part_vector.size() == 6)
     {
-        std::string name_string = part_vector[0];
-        std::string input_data_string = part_vector[1];
-        std::string tag_string = part_vector[2];
-        std::string rasterizer_mode_string = part_vector[3];
-        std::string blend_mode_string = part_vector[4];
-        std::string depth_stencil_mode = part_vector[5];
+        name_string = trim_copy(part_vector[0]);
+        input_data_string = trim_copy(part_vector[1]);
+        tag_string = trim_copy(part_vector[2]);
+        rasterizer_mode_string = trim_copy(part_vector[3]);
+        blend_mode_string = trim_copy(part_vector[4]);
+        depth_stencil_mode = trim_copy(part_vector[5]);
     }
     else
     {
@@ -50,5 +56,118 @@ void analyse_shader::analyse_code(std::string combine)
         return;
     }
 
-    
+    Shader* shader = new Shader();
+
+    //  Get Name
+    analyse_name_part(name_string, shader);
+
+    //  Get InputData
+    analyse_input_data_part(input_data_string, shader);
+}
+
+void analyse_shader::erase_enter(std::string& str)
+{
+    str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+}
+
+std::string analyse_shader::character_segmentation(std::string source) {
+    int len = source.size();
+    char buf[1024];
+    char buf1[1024]={0};
+    char tar1[10] = {"{"};
+    char tar2[10] = {"}"};
+    sprintf(buf ,"%s", source.c_str());
+    int ib = 0;
+    for (int i = 0; i < len; i++)
+    {
+        if ( buf[i] == tar1[0]) {
+
+            for (int ii = i; i < len; i++)
+            {
+                if (buf[i + 1] == tar2[0])
+                {
+                    break;
+                }
+                if (buf[i + 1] != tar1[0])
+                {
+                    buf1[ib] = buf[i + 1];
+                    ib++;
+                }
+            }
+        }
+    }
+    return buf1;
+}
+
+void analyse_shader::analyse_name_part(std::string name_string, Shader* shader)
+{
+    //  Judge Content Name
+    string::size_type stringIdx = name_string.find(shader_key_word[0]);
+    //  Content "Name"
+    if (stringIdx != string::npos)
+    {
+        vector<string> name_vector;
+        //  Split (';')
+        split(name_vector, name_string, is_any_of(";"), token_compress_on);
+        if(name_vector.size() > 0)
+        {
+            //  Split ("=")
+            name_string = name_vector[0];
+            name_vector.clear();
+            split(name_vector, name_string, is_any_of("="), token_compress_on);
+            if(name_vector.size() > 1)
+            {   //  Set Name
+                shader->set_name(trim_copy(name_vector[1]));
+            }
+        }
+    }
+}
+
+void analyse_shader::analyse_input_data_part(std::string input_data_string, Shader* shader)
+{
+    //  Judge Content InputData
+    string::size_type stringIdx = input_data_string.find(shader_key_word[1]);
+    //  Content "InputData"
+    if (stringIdx != string::npos)
+    {
+        //  Get{} String
+        input_data_string = character_segmentation(input_data_string);
+
+        vector<string> input_data_vector;
+        //  Split (';')
+        split(input_data_vector, input_data_string, is_any_of(";"), token_compress_on);
+        if(input_data_vector.size() > 0)
+        {
+            vector<string> property_data_vector;
+
+            for(int i = 0; i < input_data_vector.size(); i++)
+            {
+                //  Content Texture
+                string::size_type texIdx = input_data_vector[i].find(input_data_key_word[0]);
+                if(texIdx != string::npos)
+                {
+                    //  Split (":")
+                    property_data_vector.clear();
+                    split(property_data_vector, input_data_vector[i], is_any_of(":"), token_compress_on);
+                    if(property_data_vector.size() > 0)
+                    {
+                        //  Split ("=")
+                        input_data_vector[i] = property_data_vector[1];
+                        property_data_vector.clear();
+                        split(property_data_vector, input_data_vector[i], is_any_of("="), token_compress_on);
+                        if(property_data_vector.size() > 1)
+                        {
+                        }
+                    }
+                }
+
+//                string::size_type colorIdx = input_data_vector[i].find(input_data_key_word[1]);
+//
+//                string::size_type intIdx = input_data_vector[i].find(input_data_key_word[2]);
+//
+//                string::size_type floatIdx = input_data_vector[i].find(input_data_key_word[3]);
+
+            }
+        }
+    }
 }

@@ -5,7 +5,7 @@
 #ifndef ANALYSE_SHADER_LOAD_SHADER_H
 #define ANALYSE_SHADER_LOAD_SHADER_H
 
-
+#pragma once
 #include <io.h>
 #include <iostream>
 #include <fstream>

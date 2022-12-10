@@ -4,9 +4,11 @@
 
 #ifndef RTTR_ANALYSE_SHADER_H
 #define RTTR_ANALYSE_SHADER_H
+#pragma once
 #include "load_shader.h"
 #include "shader_struct.h"
 #include "property.h"
+#include "Shader.h"
 #include <boost/algorithm/string.hpp>
 
 using namespace boost;

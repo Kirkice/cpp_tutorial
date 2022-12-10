@@ -1,3 +1,9 @@
-
+/.idea/*
+/cmake-build-debug/*
+/3rd_party/boost_1_80_0/*
 /reflect/.idea/*
 /reflect/cmake-build-debug/*
+/property/.idea/*
+/property/cmake-build-debug/*
+/analyse_shader/.idea/*
+/analyse_shader/cmake-build-debug/*

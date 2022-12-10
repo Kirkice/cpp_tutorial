@@ -22,7 +22,7 @@ void analyse_shader::analyse()
         while (getline(srcFile, x))    //数字读取方式
         {
             combine.append(x);
-            combine.append("!");
+            combine.append("/n");
         }
         analyse_code(combine);
         srcFile.close();
@@ -35,10 +35,20 @@ void analyse_shader::analyse_code(std::string combine)
     vector<string> part_vector;
     split(part_vector, combine, is_any_of("---"), token_compress_on);
 
-    std::string name_string = "";
-    std::string tag_string = "";
-    std::string rasterizer_mode_string = "";
-    std::string blend_mode_string = "";
-    std::string depth_stencil_mode = "";
+    if(part_vector.size() == 6)
+    {
+        std::string name_string = part_vector[0];
+        std::string input_data_string = part_vector[1];
+        std::string tag_string = part_vector[2];
+        std::string rasterizer_mode_string = part_vector[3];
+        std::string blend_mode_string = part_vector[4];
+        std::string depth_stencil_mode = part_vector[5];
+    }
+    else
+    {
+        cout<<"error shader code!"<<endl;
+        return;
+    }
 
+    
 }

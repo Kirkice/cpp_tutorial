@@ -4,7 +4,7 @@
 
 #ifndef PROPERTY_PROPERTY_H
 #define PROPERTY_PROPERTY_H
-
+#pragma once
 #include <vector>
 #include <string>
 #include <unordered_map>

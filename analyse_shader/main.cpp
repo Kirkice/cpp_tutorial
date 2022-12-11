@@ -14,7 +14,7 @@ int main()
     analyse_shader m_analyse_shader = analyse_shader();
     m_analyse_shader.load(path,shader_vector);
 
-//    cout<<"Shader 数量"<<shader_vector.size()<<endl;
+//    cout<<"Shader Count"<<shader_vector.size()<<endl;
 //    for (int l = 0; l < shader_vector.size(); ++l) {
 //        cout<<shader_vector[l]->get_name()<<endl;
 //

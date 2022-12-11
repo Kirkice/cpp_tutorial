@@ -43,3 +43,4 @@ DepthStencilMode
     DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
     DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 }
+

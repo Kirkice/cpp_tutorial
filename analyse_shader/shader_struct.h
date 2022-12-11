@@ -88,8 +88,8 @@ struct ShaderTags
 //  RasterizerMode
 struct ShaderRasterizerMode
 {
-    D3D12_FILL_MODE D3D12_FILL_MODE_SOLID;
-    D3D12_CULL_MODE D3D12_CULL_MODE_BACK;
+    D3D12_FILL_MODE FILL_MODE;
+    D3D12_CULL_MODE CULL_MODE;
 };
 
 //  BlendMode

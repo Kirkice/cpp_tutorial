@@ -23,9 +23,15 @@ public:
 private:
     void erase_enter(std::string& str);
     std::string character_segmentation(std::string source);
+
+private:
     void analyse_code(std::string combine);
     void analyse_name_part(std::string name_string, Shader* shader);
-    void analyse_input_data_part(std::string name_string, Shader* shader);
+    void analyse_input_data_part(std::string input_data_string, Shader* shader);
+    void analyse_tags_part(std::string tag_string, Shader* shader);
+    void analyse_raster_mode_part(std::string raster_mode_string, Shader* shader);
+    void analyse_blend_mode_part(std::string blend_mode_string, Shader* shader);
+    void analyse_depth_stencil_mode_part(std::string depth_stencil_mode_string, Shader* shader);
 
 private:
     std::vector<std::string> shader_file_paths;     //  Shader 文件路径

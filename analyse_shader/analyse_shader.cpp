@@ -63,6 +63,9 @@ void analyse_shader::analyse_code(std::string combine)
 
     //  Get InputData
     analyse_input_data_part(input_data_string, shader);
+
+    //  Get TagsData
+    analyse_tags_part(tag_string, shader);
 }
 
 void analyse_shader::erase_enter(std::string& str)
@@ -118,7 +121,6 @@ void analyse_shader::analyse_name_part(std::string name_string, Shader* shader)
             if(name_vector.size() > 1)
             {   //  Set Name
                 shader->set_name(trim_copy(name_vector[1]));
-                cout<<"Name: "<<name_vector[1]<<endl;
             }
         }
     }
@@ -243,6 +245,127 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, Shad
                 }
 
             }
+        }
+    }
+}
+
+void analyse_shader::analyse_tags_part(std::string tag_string, Shader* shader) {
+    //  Judge Content TagsData
+    string::size_type stringIdx = tag_string.find(shader_key_word[2]);
+    //  Content "TagsData"
+    if (stringIdx != string::npos) {
+        //  Get{} String
+        tag_string = character_segmentation(tag_string);
+
+        vector <string> tag_vector;
+        //  Split (';')
+        split(tag_vector, tag_string, is_any_of(";"), token_compress_on);
+        if(tag_vector.size() > 0)
+        {
+            vector <string> tags_data_vector;
+            ShaderTags tags;
+
+            for(int i = 0; i < tag_vector.size(); i++)
+            {
+                std::string current_line_string = tag_vector[i];
+
+                //  Content RenderPass
+                string::size_type render_pass_Idx = tag_vector[i].find(tags_key_word[0]);
+                if(render_pass_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    tags_data_vector.clear();
+                    split(tags_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(tags_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(tags_data_vector[0]),"RenderPass"))
+                            tags.RenderPass = trim_copy(tags_data_vector[1]);
+                    }
+                }
+
+                //  Content RenderType
+                string::size_type render_type_Idx = tag_vector[i].find(tags_key_word[1]);
+                if(render_type_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    tags_data_vector.clear();
+                    split(tags_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(tags_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(tags_data_vector[0]),"RenderType"))
+                            tags.RenderType = trim_copy(tags_data_vector[1]);
+                    }
+                }
+            }
+
+            shader->set_tag(tags);
+        }
+    }
+}
+
+void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Shader* shader)
+{
+    //  Judge Content RasterizerMode
+    string::size_type stringIdx = raster_mode_string.find(shader_key_word[3]);
+    //  Content "RasterizerMode"
+    if (stringIdx != string::npos) {
+        //  Get{} String
+        raster_mode_string = character_segmentation(raster_mode_string);
+
+        vector <string> raster_mode_vector;
+        //  Split (';')
+        split(raster_mode_vector, raster_mode_string, is_any_of(";"), token_compress_on);
+        if(raster_mode_vector.size() > 0)
+        {
+            vector <string> raster_mode_data_vector;
+            ShaderRasterizerMode rasterizer_mode;
+
+            for(int i = 0; i < raster_mode_vector.size(); i++)
+            {
+                std::string current_line_string = raster_mode_vector[i];
+
+                //  Content FillMode
+                string::size_type fill_mode_Idx = raster_mode_vector[i].find(tags_key_word[0]);
+                if(fill_mode_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    raster_mode_data_vector.clear();
+                    split(raster_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(raster_mode_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(raster_mode_data_vector[0]),"FillMode"))
+                        {
+                            if(equals(trim_copy(raster_mode_data_vector[1]),"D3D12_FILL_MODE_WIREFRAME"))
+                                rasterizer_mode.FILL_MODE = D3D12_FILL_MODE_WIREFRAME;
+                            else
+                                rasterizer_mode.FILL_MODE = D3D12_FILL_MODE_SOLID;
+                        }
+                    }
+                }
+
+                //  Content CullMode
+                string::size_type cull_mode_Idx = raster_mode_vector[i].find(tags_key_word[1]);
+                if(cull_mode_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    raster_mode_data_vector.clear();
+                    split(raster_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(raster_mode_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(raster_mode_data_vector[0]),"CullMode"))
+                        {
+                            if(equals(trim_copy(raster_mode_data_vector[1]),"D3D12_CULL_MODE_NONE"))
+                                rasterizer_mode.CULL_MODE = D3D12_CULL_MODE_NONE;
+                            else if(equals(trim_copy(raster_mode_data_vector[1]),"D3D12_CULL_MODE_FRONT"))
+                                rasterizer_mode.CULL_MODE = D3D12_CULL_MODE_FRONT;
+                            else
+                                rasterizer_mode.CULL_MODE = D3D12_CULL_MODE_BACK;
+                        }
+                    }
+                }
+            }
+
+            shader->set_rasterizer_mode(rasterizer_mode);
         }
     }
 }

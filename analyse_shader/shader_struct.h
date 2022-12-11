@@ -107,4 +107,12 @@ struct ShaderBlendMode
     D3D12_COLOR_WRITE_ENABLE RenderTargetWriteMask;
 };
 
+//  DepthStencilMode
+struct ShaderDepthStencilMode
+{
+    BOOL DepthEnable;
+    D3D12_DEPTH_WRITE_MASK DepthWriteMask;
+    D3D12_COMPARISON_FUNC DepthFunc;
+};
+
 #endif //ANALYSE_SHADER_SHADER_STRUCT_H

@@ -19,36 +19,42 @@ public:
     const std::string& get_name()const;
 
     //  set property state
-    void set_property_state(State state);
+    void set_property_state(State& state);
     //  get property state
-    const State* get_property_state()const;
+    const State get_property_state()const;
 
     //  set tags
-    void set_tag(ShaderTags tag);
+    void set_tag(ShaderTags& tag);
     //  get tags
-    const ShaderTags* get_tag()const;
+    const ShaderTags get_tag()const;
 
     //  set rasterizer
-    void set_rasterizer_mode(ShaderRasterizerMode mode);
+    void set_rasterizer_mode(ShaderRasterizerMode& mode);
     //  get rasterizer
-    const ShaderRasterizerMode* get_rasterizer_mode()const;
+    const ShaderRasterizerMode get_rasterizer_mode()const;
 
     //  set blend
-    void set_blend_mode(ShaderBlendMode mode);
+    void set_blend_mode(ShaderBlendMode& mode);
     //  get blend
-    const ShaderBlendMode* get_blend_mode()const;
+    const ShaderBlendMode get_blend_mode()const;
 
+    //  set depth stencil
+    void set_depth_stencil_mode(ShaderDepthStencilMode& mode);
+    //  get depth stencil
+    const ShaderDepthStencilMode get_depth_stencil_mode()const;
 private:
     //  name
     std::string name;
     //  property
-    State* property_state;
+    State property_state;
     //  tags
-    ShaderTags* tags;
+    ShaderTags tags;
     //  rasterizer
-    ShaderRasterizerMode* rasterizer_mode;
+    ShaderRasterizerMode rasterizer_mode;
     //  blend
-    ShaderBlendMode* blend_mode;
+    ShaderBlendMode blend_mode;
+    // depth stencil
+    ShaderDepthStencilMode depth_stencil_mode;
 };
 
 

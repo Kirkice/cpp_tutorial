@@ -4,12 +4,14 @@
 
 #include "analyse_shader.h"
 
-void analyse_shader::load(std::string folder_path)
+void analyse_shader::load(std::string folder_path, std::vector<std::unique_ptr<Shader>>& shader_vector)
 {
     get_shader_files(folder_path,shader_file_paths);
+
+    analyse(shader_vector);
 }
 
-void analyse_shader::analyse()
+void analyse_shader::analyse(std::vector<std::unique_ptr<Shader>>& shader_vector)
 {
     if(shader_file_paths.size() <= 0)
         return;
@@ -23,12 +25,12 @@ void analyse_shader::analyse()
         {
             combine.append(x);
         }
-        analyse_code(combine);
+        analyse_code(combine, shader_vector);
         srcFile.close();
     }
 }
 
-void analyse_shader::analyse_code(std::string combine)
+void analyse_shader::analyse_code(std::string combine, std::vector<std::unique_ptr<Shader>>& shader_vector)
 {
     //  第一层关键字分割
     vector<string> part_vector;
@@ -56,22 +58,28 @@ void analyse_shader::analyse_code(std::string combine)
         return;
     }
 
-    Shader* shader = new Shader();
+    auto shader = std::make_unique<Shader>();
 
+    int analyse_shader_part_index = 0;
     //  Get Name
-    analyse_name_part(name_string, shader);
+    analyse_name_part(name_string, shader, analyse_shader_part_index++);
 
     //  Get InputData
-    analyse_input_data_part(input_data_string, shader);
+    analyse_input_data_part(input_data_string, shader, analyse_shader_part_index++);
 
     //  Get TagsData
-    analyse_tags_part(tag_string, shader);
+    analyse_tags_part(tag_string, shader, analyse_shader_part_index++);
 
     //  Get Raster Mode
-    analyse_raster_mode_part(rasterizer_mode_string, shader);
+    analyse_raster_mode_part(rasterizer_mode_string, shader, analyse_shader_part_index++);
 
     //  Get Blend Mode
-    analyse_blend_mode_part(blend_mode_string, shader);
+    analyse_blend_mode_part(blend_mode_string, shader, analyse_shader_part_index++);
+
+    //  Get Depth Stencil Mode
+    analyse_depth_stencil_mode_part(depth_stencil_mode, shader, analyse_shader_part_index++);
+
+    shader_vector.push_back(std::move(shader));
 }
 
 void analyse_shader::set_d3d12_blend(D3D12_BLEND& blend_mode, std::string compare_string, std::string key, std::string value)
@@ -190,6 +198,29 @@ void analyse_shader::set_d3d12_color_write_enable(D3D12_COLOR_WRITE_ENABLE& writ
     }
 }
 
+void analyse_shader::set_d3d12_comparison_func(D3D12_COMPARISON_FUNC& comparison_func, std::string compare_string, std::string key, std::string value)
+{
+    if(equals(trim_copy(key),compare_string))
+    {
+        if(equals(trim_copy(value),"D3D12_COMPARISON_FUNC_NEVER"))
+            comparison_func = D3D12_COMPARISON_FUNC_NEVER;
+        else if(equals(trim_copy(value),"D3D12_COMPARISON_FUNC_LESS"))
+            comparison_func = D3D12_COMPARISON_FUNC_LESS;
+        else if(equals(trim_copy(value),"D3D12_COMPARISON_FUNC_EQUAL"))
+            comparison_func = D3D12_COMPARISON_FUNC_EQUAL;
+        else if(equals(trim_copy(value),"D3D12_COMPARISON_FUNC_LESS_EQUAL"))
+            comparison_func = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+        else if(equals(trim_copy(value),"D3D12_COMPARISON_FUNC_GREATER"))
+            comparison_func = D3D12_COMPARISON_FUNC_GREATER;
+        else if(equals(trim_copy(value),"D3D12_COMPARISON_FUNC_NOT_EQUAL"))
+            comparison_func = D3D12_COMPARISON_FUNC_NOT_EQUAL;
+        else if(equals(trim_copy(value),"D3D12_COMPARISON_FUNC_GREATER_EQUAL"))
+            comparison_func = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+        else
+            comparison_func = D3D12_COMPARISON_FUNC_ALWAYS;
+    }
+}
+
 void analyse_shader::erase_enter(std::string& str)
 {
     str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
@@ -224,10 +255,10 @@ std::string analyse_shader::character_segmentation(std::string source) {
     return buf1;
 }
 
-void analyse_shader::analyse_name_part(std::string name_string, Shader* shader)
+void analyse_shader::analyse_name_part(std::string name_string, std::unique_ptr<Shader>& shader, int index)
 {
     //  Judge Content Name
-    string::size_type stringIdx = name_string.find(shader_key_word[0]);
+    string::size_type stringIdx = name_string.find(shader_key_word[index]);
     //  Content "Name"
     if (stringIdx != string::npos)
     {
@@ -248,12 +279,12 @@ void analyse_shader::analyse_name_part(std::string name_string, Shader* shader)
     }
 }
 
-void analyse_shader::analyse_input_data_part(std::string input_data_string, Shader* shader)
+void analyse_shader::analyse_input_data_part(std::string input_data_string, std::unique_ptr<Shader>& shader, int index)
 {
 //    State shader_state;
 
     //  Judge Content InputData
-    string::size_type stringIdx = input_data_string.find(shader_key_word[1]);
+    string::size_type stringIdx = input_data_string.find(shader_key_word[index]);
     //  Content "InputData"
     if (stringIdx != string::npos)
     {
@@ -269,9 +300,10 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, Shad
 
             for(int i = 0; i < input_data_vector.size(); i++)
             {
+                int input_data_vector_index = 0;
                 std::string current_line_string = input_data_vector[i];
                 //  Content Texture
-                string::size_type texIdx = current_line_string.find(input_data_key_word[0]);
+                string::size_type texIdx = current_line_string.find(input_data_key_word[input_data_vector_index++]);
                 if(texIdx != string::npos)
                 {
                     //  Split (":")
@@ -295,7 +327,7 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, Shad
                 }
 
                 //  Content Color
-                string::size_type colorIdx = current_line_string.find(input_data_key_word[1]);
+                string::size_type colorIdx = current_line_string.find(input_data_key_word[input_data_vector_index++]);
                 if(colorIdx != string::npos)
                 {
                     //  Split (":")
@@ -319,7 +351,7 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, Shad
                 }
 
                 //  Content Int
-                string::size_type intIdx = input_data_vector[i].find(input_data_key_word[2]);
+                string::size_type intIdx = input_data_vector[i].find(input_data_key_word[input_data_vector_index++]);
                 if(intIdx != string::npos)
                 {
                     //  Split (":")
@@ -343,7 +375,7 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, Shad
                 }
 
                 //  Content Float
-                string::size_type floatIdx = input_data_vector[i].find(input_data_key_word[3]);
+                string::size_type floatIdx = input_data_vector[i].find(input_data_key_word[input_data_vector_index]);
                 if(floatIdx != string::npos)
                 {
                     //  Split (":")
@@ -371,9 +403,9 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, Shad
     }
 }
 
-void analyse_shader::analyse_tags_part(std::string tag_string, Shader* shader) {
+void analyse_shader::analyse_tags_part(std::string tag_string, std::unique_ptr<Shader>& shader, int index) {
     //  Judge Content TagsData
-    string::size_type stringIdx = tag_string.find(shader_key_word[2]);
+    string::size_type stringIdx = tag_string.find(shader_key_word[index]);
     //  Content "TagsData"
     if (stringIdx != string::npos) {
         //  Get{} String
@@ -389,10 +421,11 @@ void analyse_shader::analyse_tags_part(std::string tag_string, Shader* shader) {
 
             for(int i = 0; i < tag_vector.size(); i++)
             {
+                int tags_key_word_index = 0;
                 std::string current_line_string = tag_vector[i];
 
                 //  Content RenderPass
-                string::size_type render_pass_Idx = tag_vector[i].find(tags_key_word[0]);
+                string::size_type render_pass_Idx = tag_vector[i].find(tags_key_word[tags_key_word_index++]);
                 if(render_pass_Idx != string::npos)
                 {
                     //  Split ("=")
@@ -406,7 +439,7 @@ void analyse_shader::analyse_tags_part(std::string tag_string, Shader* shader) {
                 }
 
                 //  Content RenderType
-                string::size_type render_type_Idx = tag_vector[i].find(tags_key_word[1]);
+                string::size_type render_type_Idx = tag_vector[i].find(tags_key_word[tags_key_word_index]);
                 if(render_type_Idx != string::npos)
                 {
                     //  Split ("=")
@@ -425,10 +458,10 @@ void analyse_shader::analyse_tags_part(std::string tag_string, Shader* shader) {
     }
 }
 
-void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Shader* shader)
+void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, std::unique_ptr<Shader>& shader, int index)
 {
     //  Judge Content RasterizerMode
-    string::size_type stringIdx = raster_mode_string.find(shader_key_word[3]);
+    string::size_type stringIdx = raster_mode_string.find(shader_key_word[index]);
     //  Content "RasterizerMode"
     if (stringIdx != string::npos) {
         //  Get{} String
@@ -444,10 +477,11 @@ void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Sh
 
             for(int i = 0; i < raster_mode_vector.size(); i++)
             {
+                int rasterizer_mode_key_word_index = 0;
                 std::string current_line_string = raster_mode_vector[i];
 
                 //  Content FillMode
-                string::size_type fill_mode_Idx = raster_mode_vector[i].find(rasterizer_mode_key_word[0]);
+                string::size_type fill_mode_Idx = raster_mode_vector[i].find(rasterizer_mode_key_word[rasterizer_mode_key_word_index++]);
                 if(fill_mode_Idx != string::npos)
                 {
                     //  Split ("=")
@@ -466,7 +500,7 @@ void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Sh
                 }
 
                 //  Content CullMode
-                string::size_type cull_mode_Idx = raster_mode_vector[i].find(rasterizer_mode_key_word[1]);
+                string::size_type cull_mode_Idx = raster_mode_vector[i].find(rasterizer_mode_key_word[rasterizer_mode_key_word_index]);
                 if(cull_mode_Idx != string::npos)
                 {
                     //  Split ("=")
@@ -492,10 +526,10 @@ void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Sh
     }
 }
 
-void analyse_shader::analyse_blend_mode_part(std::string blend_mode_string, Shader* shader)
+void analyse_shader::analyse_blend_mode_part(std::string blend_mode_string, std::unique_ptr<Shader>& shader, int index)
 {
     //  Judge Content BlendMode
-    string::size_type stringIdx = blend_mode_string.find(shader_key_word[4]);
+    string::size_type stringIdx = blend_mode_string.find(shader_key_word[index]);
     //  Content "BlendMode"
     if (stringIdx != string::npos) {
         //  Get{} String
@@ -630,7 +664,7 @@ void analyse_shader::analyse_blend_mode_part(std::string blend_mode_string, Shad
                 }
 
                 //  Content RenderTargetWriteMask
-                string::size_type render_target_write_mask_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                string::size_type render_target_write_mask_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index]);
                 if(render_target_write_mask_Idx != string::npos)
                 {
                     //  Split ("=")
@@ -641,6 +675,83 @@ void analyse_shader::analyse_blend_mode_part(std::string blend_mode_string, Shad
                 }
             }
             shader->set_blend_mode(blend_mode);
+        }
+    }
+}
+
+void analyse_shader::analyse_depth_stencil_mode_part(std::string depth_stencil_mode_string, std::unique_ptr<Shader>& shader, int index)
+{
+    //  Judge Content DepthStencilMode
+    string::size_type stringIdx = depth_stencil_mode_string.find(shader_key_word[index]);
+    //  Content "DepthStencilMode"
+    if (stringIdx != string::npos) {
+        //  Get{} String
+        depth_stencil_mode_string = character_segmentation(depth_stencil_mode_string);
+
+        vector <string> depth_stencil_vector;
+        //  Split (';')
+        split(depth_stencil_vector, depth_stencil_mode_string, is_any_of(";"), token_compress_on);
+        if(depth_stencil_vector.size() > 0)
+        {
+            vector <string> depth_stencil_data_vector;
+            ShaderDepthStencilMode depth_stencil_mode;
+
+            for(int i = 0; i < depth_stencil_vector.size(); i++)
+            {
+                int depth_stencil_mode_key_word_index = 0;
+                std::string current_line_string = depth_stencil_vector[i];
+
+                //  Content DepthEnable
+                string::size_type depth_enable_Idx = depth_stencil_vector[i].find(depth_stencil_mode_key_word[depth_stencil_mode_key_word_index++]);
+                if(depth_enable_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    depth_stencil_data_vector.clear();
+                    split(depth_stencil_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(depth_stencil_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(depth_stencil_data_vector[0]),"DepthEnable"))
+                        {
+                            if(equals(trim_copy(depth_stencil_data_vector[1]),"true"))
+                                depth_stencil_mode.DepthEnable = true;
+                            else
+                                depth_stencil_mode.DepthEnable = false;
+                        }
+                    }
+                }
+
+                //  Content DepthWriteMask
+                string::size_type depth_write_mask_Idx = depth_stencil_vector[i].find(depth_stencil_mode_key_word[depth_stencil_mode_key_word_index++]);
+                if(depth_write_mask_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    depth_stencil_data_vector.clear();
+                    split(depth_stencil_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(depth_stencil_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(depth_stencil_data_vector[0]),"DepthWriteMask"))
+                        {
+                            if(equals(trim_copy(depth_stencil_data_vector[1]),"D3D12_DEPTH_WRITE_MASK_ZERO"))
+                                depth_stencil_mode.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+                            else
+                                depth_stencil_mode.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+                        }
+                    }
+                }
+
+                //  Content DepthWriteMask
+                string::size_type comparison_func_Idx = depth_stencil_vector[i].find(depth_stencil_mode_key_word[depth_stencil_mode_key_word_index]);
+                if(comparison_func_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    depth_stencil_data_vector.clear();
+                    split(depth_stencil_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(depth_stencil_data_vector.size() > 0)
+                        set_d3d12_comparison_func(depth_stencil_mode.DepthFunc, "DepthFunc", depth_stencil_data_vector[0], depth_stencil_data_vector[1]);
+                }
+            }
+
+            shader->set_depth_stencil_mode(depth_stencil_mode);
         }
     }
 }

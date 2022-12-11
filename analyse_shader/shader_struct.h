@@ -104,7 +104,7 @@ struct ShaderBlendMode
     D3D12_BLEND DestBlendAlpha;
     D3D12_BLEND_OP BlendOpAlpha;
     D3D12_LOGIC_OP LogicOp;
-    UINT8 RenderTargetWriteMask;
+    D3D12_COLOR_WRITE_ENABLE RenderTargetWriteMask;
 };
 
 #endif //ANALYSE_SHADER_SHADER_STRUCT_H

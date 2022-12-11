@@ -136,6 +136,60 @@ void analyse_shader::set_d3d12_blend_op(D3D12_BLEND_OP& blend_mode, std::string 
     }
 }
 
+void analyse_shader::set_d3d12_logic_op(D3D12_LOGIC_OP& blend_mode, std::string compare_string, std::string key, std::string value)
+{
+    if(equals(trim_copy(key),compare_string))
+    {
+        if(equals(trim_copy(value),"D3D12_LOGIC_OP_CLEAR"))
+            blend_mode = D3D12_LOGIC_OP_CLEAR;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_SET"))
+            blend_mode = D3D12_LOGIC_OP_SET;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_COPY"))
+            blend_mode = D3D12_LOGIC_OP_COPY;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_COPY_INVERTED"))
+            blend_mode = D3D12_LOGIC_OP_COPY_INVERTED;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_NOOP"))
+            blend_mode = D3D12_LOGIC_OP_NOOP;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_AND"))
+            blend_mode = D3D12_LOGIC_OP_AND;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_NAND"))
+            blend_mode = D3D12_LOGIC_OP_NAND;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_OR"))
+            blend_mode = D3D12_LOGIC_OP_OR;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_NOR"))
+            blend_mode = D3D12_LOGIC_OP_NOR;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_XOR"))
+            blend_mode = D3D12_LOGIC_OP_XOR;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_EQUIV"))
+            blend_mode = D3D12_LOGIC_OP_EQUIV;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_AND_REVERSE"))
+            blend_mode = D3D12_LOGIC_OP_AND_REVERSE;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_AND_INVERTED"))
+            blend_mode = D3D12_LOGIC_OP_AND_INVERTED;
+        else if(equals(trim_copy(value),"D3D12_LOGIC_OP_OR_REVERSE"))
+            blend_mode = D3D12_LOGIC_OP_OR_REVERSE;
+        else
+            blend_mode = D3D12_LOGIC_OP_OR_INVERTED;
+    }
+}
+
+void analyse_shader::set_d3d12_color_write_enable(D3D12_COLOR_WRITE_ENABLE& write_enable, std::string compare_string, std::string key, std::string value)
+{
+    if(equals(trim_copy(key),compare_string))
+    {
+        if(equals(trim_copy(value),"D3D12_COLOR_WRITE_ENABLE_RED"))
+            write_enable = D3D12_COLOR_WRITE_ENABLE_RED;
+        else if(equals(trim_copy(value),"D3D12_COLOR_WRITE_ENABLE_GREEN"))
+            write_enable = D3D12_COLOR_WRITE_ENABLE_GREEN;
+        else if(equals(trim_copy(value),"D3D12_COLOR_WRITE_ENABLE_BLUE"))
+            write_enable = D3D12_COLOR_WRITE_ENABLE_BLUE;
+        else if(equals(trim_copy(value),"D3D12_COLOR_WRITE_ENABLE_ALPHA"))
+            write_enable = D3D12_COLOR_WRITE_ENABLE_ALPHA;
+        else
+            write_enable = D3D12_COLOR_WRITE_ENABLE_ALL;
+    }
+}
+
 void analyse_shader::erase_enter(std::string& str)
 {
     str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
@@ -563,8 +617,29 @@ void analyse_shader::analyse_blend_mode_part(std::string blend_mode_string, Shad
                     if(blend_mode_data_vector.size() > 0)
                         set_d3d12_blend_op(blend_mode.BlendOpAlpha, "BlendOpAlpha", blend_mode_data_vector[0], blend_mode_data_vector[1]);
                 }
-            }
 
+                //  Content LogicOp
+                string::size_type blend_logic_op_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(blend_logic_op_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_logic_op(blend_mode.LogicOp, "LogicOp", blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+
+                //  Content RenderTargetWriteMask
+                string::size_type render_target_write_mask_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(render_target_write_mask_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_color_write_enable(blend_mode.RenderTargetWriteMask, "RenderTargetWriteMask", blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+            }
             shader->set_blend_mode(blend_mode);
         }
     }

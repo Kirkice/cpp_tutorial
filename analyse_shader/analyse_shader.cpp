@@ -66,6 +66,74 @@ void analyse_shader::analyse_code(std::string combine)
 
     //  Get TagsData
     analyse_tags_part(tag_string, shader);
+
+    //  Get Raster Mode
+    analyse_raster_mode_part(rasterizer_mode_string, shader);
+
+    //  Get Blend Mode
+    analyse_blend_mode_part(blend_mode_string, shader);
+}
+
+void analyse_shader::set_d3d12_blend(D3D12_BLEND& blend_mode, std::string compare_string, std::string key, std::string value)
+{
+    if(equals(trim_copy(key),compare_string))
+    {
+        if(equals(trim_copy(value),"D3D12_BLEND_ZERO"))
+            blend_mode = D3D12_BLEND_ZERO;
+        else if(equals(trim_copy(value),"D3D12_BLEND_ONE"))
+            blend_mode = D3D12_BLEND_ONE;
+        else if(equals(trim_copy(value),"D3D12_BLEND_SRC_COLOR"))
+            blend_mode = D3D12_BLEND_SRC_COLOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_INV_SRC_COLOR"))
+            blend_mode = D3D12_BLEND_INV_SRC_COLOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_SRC_ALPHA"))
+            blend_mode = D3D12_BLEND_SRC_ALPHA;
+        else if(equals(trim_copy(value),"D3D12_BLEND_INV_SRC_ALPHA"))
+            blend_mode = D3D12_BLEND_INV_SRC_ALPHA;
+        else if(equals(trim_copy(value),"D3D12_BLEND_DEST_ALPHA"))
+            blend_mode = D3D12_BLEND_DEST_ALPHA;
+        else if(equals(trim_copy(value),"D3D12_BLEND_INV_DEST_ALPHA"))
+            blend_mode = D3D12_BLEND_INV_DEST_ALPHA;
+        else if(equals(trim_copy(value),"D3D12_BLEND_DEST_COLOR"))
+            blend_mode = D3D12_BLEND_DEST_COLOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_INV_DEST_COLOR"))
+            blend_mode = D3D12_BLEND_INV_DEST_COLOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_SRC_ALPHA_SAT"))
+            blend_mode = D3D12_BLEND_SRC_ALPHA_SAT;
+        else if(equals(trim_copy(value),"D3D12_BLEND_BLEND_FACTOR"))
+            blend_mode = D3D12_BLEND_BLEND_FACTOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_INV_BLEND_FACTOR"))
+            blend_mode = D3D12_BLEND_INV_BLEND_FACTOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_SRC1_COLOR"))
+            blend_mode = D3D12_BLEND_SRC1_COLOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_INV_SRC1_COLOR"))
+            blend_mode = D3D12_BLEND_INV_SRC1_COLOR;
+        else if(equals(trim_copy(value),"D3D12_BLEND_SRC1_ALPHA"))
+            blend_mode = D3D12_BLEND_SRC1_ALPHA;
+        else if(equals(trim_copy(value),"D3D12_BLEND_INV_SRC1_ALPHA"))
+            blend_mode = D3D12_BLEND_INV_SRC1_ALPHA;
+        else if(equals(trim_copy(value),"D3D12_BLEND_ALPHA_FACTOR"))
+            blend_mode = D3D12_BLEND_ALPHA_FACTOR;
+        else
+            blend_mode = D3D12_BLEND_INV_ALPHA_FACTOR;
+    }
+}
+
+void analyse_shader::set_d3d12_blend_op(D3D12_BLEND_OP& blend_mode, std::string compare_string, std::string key, std::string value)
+{
+    if(equals(trim_copy(key),compare_string))
+    {
+        if(equals(trim_copy(value),"D3D12_BLEND_OP_ADD"))
+            blend_mode = D3D12_BLEND_OP_ADD;
+        else if(equals(trim_copy(value),"D3D12_BLEND_OP_SUBTRACT"))
+            blend_mode = D3D12_BLEND_OP_SUBTRACT;
+        else if(equals(trim_copy(value),"D3D12_BLEND_OP_REV_SUBTRACT"))
+            blend_mode = D3D12_BLEND_OP_REV_SUBTRACT;
+        else if(equals(trim_copy(value),"D3D12_BLEND_OP_MIN"))
+            blend_mode = D3D12_BLEND_OP_MIN;
+        else
+            blend_mode = D3D12_BLEND_OP_MAX;
+    }
 }
 
 void analyse_shader::erase_enter(std::string& str)
@@ -325,7 +393,7 @@ void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Sh
                 std::string current_line_string = raster_mode_vector[i];
 
                 //  Content FillMode
-                string::size_type fill_mode_Idx = raster_mode_vector[i].find(tags_key_word[0]);
+                string::size_type fill_mode_Idx = raster_mode_vector[i].find(rasterizer_mode_key_word[0]);
                 if(fill_mode_Idx != string::npos)
                 {
                     //  Split ("=")
@@ -344,7 +412,7 @@ void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Sh
                 }
 
                 //  Content CullMode
-                string::size_type cull_mode_Idx = raster_mode_vector[i].find(tags_key_word[1]);
+                string::size_type cull_mode_Idx = raster_mode_vector[i].find(rasterizer_mode_key_word[1]);
                 if(cull_mode_Idx != string::npos)
                 {
                     //  Split ("=")
@@ -366,6 +434,138 @@ void analyse_shader::analyse_raster_mode_part(std::string raster_mode_string, Sh
             }
 
             shader->set_rasterizer_mode(rasterizer_mode);
+        }
+    }
+}
+
+void analyse_shader::analyse_blend_mode_part(std::string blend_mode_string, Shader* shader)
+{
+    //  Judge Content BlendMode
+    string::size_type stringIdx = blend_mode_string.find(shader_key_word[4]);
+    //  Content "BlendMode"
+    if (stringIdx != string::npos) {
+        //  Get{} String
+        blend_mode_string = character_segmentation(blend_mode_string);
+
+        vector <string> blend_mode_vector;
+        //  Split (';')
+        split(blend_mode_vector, blend_mode_string, is_any_of(";"), token_compress_on);
+        if(blend_mode_vector.size() > 0)
+        {
+            vector <string> blend_mode_data_vector;
+            ShaderBlendMode blend_mode;
+
+            for(int i = 0; i < blend_mode_vector.size(); i++)
+            {
+                int blend_mode_key_word_index = 0;
+                std::string current_line_string = blend_mode_vector[i];
+
+                //  Content BlendEnable
+                string::size_type blend_enable_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(blend_enable_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(blend_mode_data_vector[0]),"BlendEnable"))
+                        {
+                            if(equals(trim_copy(blend_mode_data_vector[1]),"true"))
+                                blend_mode.BlendEnable = true;
+                            else
+                                blend_mode.BlendEnable = false;
+                        }
+                    }
+                }
+
+                //  Content LogicOpEnable
+                string::size_type logic_op_enable_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(logic_op_enable_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                    {
+                        if(equals(trim_copy(blend_mode_data_vector[0]),"LogicOpEnable"))
+                        {
+                            if(equals(trim_copy(blend_mode_data_vector[1]),"true"))
+                                blend_mode.LogicOpEnable = true;
+                            else
+                                blend_mode.LogicOpEnable = false;
+                        }
+                    }
+                }
+
+                //  Content SrcBlend
+                string::size_type src_blend_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(src_blend_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_blend(blend_mode.SrcBlend, "SrcBlend",blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+
+                //  Content DestBlend
+                string::size_type dest_blend_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(dest_blend_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_blend(blend_mode.DestBlend, "DestBlend", blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+
+                //  Content BlendOp
+                string::size_type blend_op_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(blend_op_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_blend_op(blend_mode.BlendOp, "BlendOp", blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+
+                //  Content SrcBlendAlpha
+                string::size_type src_blend_alpha_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(src_blend_alpha_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_blend(blend_mode.SrcBlendAlpha, "SrcBlendAlpha", blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+
+                //  Content DestBlendAlpha
+                string::size_type dest_blend_alpha_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(dest_blend_alpha_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_blend(blend_mode.DestBlendAlpha, "DestBlendAlpha", blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+
+                //  Content BlendOpAlpha
+                string::size_type blend_op_alpha_Idx = blend_mode_vector[i].find(blend_mode_key_word[blend_mode_key_word_index++]);
+                if(blend_op_alpha_Idx != string::npos)
+                {
+                    //  Split ("=")
+                    blend_mode_data_vector.clear();
+                    split(blend_mode_data_vector, current_line_string, is_any_of("="), token_compress_on);
+                    if(blend_mode_data_vector.size() > 0)
+                        set_d3d12_blend_op(blend_mode.BlendOpAlpha, "BlendOpAlpha", blend_mode_data_vector[0], blend_mode_data_vector[1]);
+                }
+            }
+
+            shader->set_blend_mode(blend_mode);
         }
     }
 }

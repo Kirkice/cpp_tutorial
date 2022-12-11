@@ -23,6 +23,8 @@ public:
 private:
     void erase_enter(std::string& str);
     std::string character_segmentation(std::string source);
+    void set_d3d12_blend(D3D12_BLEND& blend_mode, std::string compare_string, std::string key, std::string value);
+    void set_d3d12_blend_op(D3D12_BLEND_OP& blend_mode, std::string compare_string, std::string key, std::string value);
 
 private:
     void analyse_code(std::string combine);

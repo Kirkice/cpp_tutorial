@@ -13,9 +13,6 @@
 #include <string>
 #include "Shader.h"
 
-class generate_hlsl_code {
-
-};
-
+void generate_hlsl_code(std::vector<std::unique_ptr<Shader>>& shader_vector, int register_index);
 
 #endif //ANALYSE_SHADER_GENERATE_HLSL_CODE_H

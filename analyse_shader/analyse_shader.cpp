@@ -281,7 +281,10 @@ void analyse_shader::analyse_name_part(std::string name_string, std::unique_ptr<
 
 void analyse_shader::analyse_input_data_part(std::string input_data_string, std::unique_ptr<Shader>& shader, int index)
 {
-//    State shader_state;
+    shader->clear_property_state_key_vector();
+    shader->clear_property_state_map();
+
+    //    State shader_state;
 
     //  Judge Content InputData
     string::size_type stringIdx = input_data_string.find(shader_key_word[index]);
@@ -317,6 +320,8 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, std:
                         split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
                         if(property_data_vector.size() > 1)
                         {
+                            shader->push_back_property_state_key_vector(trim_copy(property_data_vector[0]));
+                            shader->push_back_property_state_map(trim_copy(property_data_vector[0]), "Texture");
                             std::cout<< trim_copy(property_data_vector[0]) << ":  ";
                             std::cout<< trim_copy(property_data_vector[1]) << std::endl;
                             //  set state
@@ -341,6 +346,8 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, std:
                         split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
                         if(property_data_vector.size() > 1)
                         {
+                            shader->push_back_property_state_key_vector(property_data_vector[0]);
+                            shader->push_back_property_state_map(trim_copy(property_data_vector[0]), "Color");
                             std::cout<< trim_copy(property_data_vector[0]) << ":  ";
                             std::cout<< trim_copy(property_data_vector[1]) << std::endl;
                             //  set state
@@ -365,6 +372,8 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, std:
                         split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
                         if(property_data_vector.size() > 1)
                         {
+                            shader->push_back_property_state_key_vector(trim_copy(property_data_vector[0]));
+                            shader->push_back_property_state_map(trim_copy(property_data_vector[0]), "Int");
                             std::cout<< trim_copy(property_data_vector[0]) << ":  ";
                             std::cout<< trim_copy(property_data_vector[1]) << std::endl;
                             //  set state
@@ -389,6 +398,8 @@ void analyse_shader::analyse_input_data_part(std::string input_data_string, std:
                         split(property_data_vector, new_current_line_string, is_any_of("="), token_compress_on);
                         if(property_data_vector.size() > 1)
                         {
+                            shader->push_back_property_state_key_vector(trim_copy(property_data_vector[0]));
+                            shader->push_back_property_state_map(trim_copy(property_data_vector[0]), "Float");
                             std::cout<< trim_copy(property_data_vector[0]) << ":  ";
                             std::cout<< trim_copy(property_data_vector[1]) << std::endl;
                             //  set state

@@ -33,6 +33,36 @@ const State Shader::get_property_state()const
     return this->property_state;
 }
 
+void Shader::clear_property_state_key_vector()
+{
+    this->property_state_key_vector.clear();
+}
+
+void Shader::push_back_property_state_key_vector(std::string str)
+{
+    this->property_state_key_vector.push_back(str);
+}
+
+const std::vector<std::string> Shader::get_property_state_key_vector()const
+{
+    return this->property_state_key_vector;
+}
+
+void Shader::clear_property_state_map()
+{
+    property_state_map.clear();
+}
+
+void Shader::push_back_property_state_map(std::string key, std::string value)
+{
+    property_state_map[key] = std::move(value);
+}
+
+const std::string Shader::get_property_state_map_value(std::string key)
+{
+    return this->property_state_map[key];
+}
+
 void Shader::set_tag(ShaderTags& tag)
 {
     this->tags = tag;

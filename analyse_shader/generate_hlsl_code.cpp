@@ -43,7 +43,9 @@ void generate_hlsl_code(std::vector<std::unique_ptr<Shader>>& shader_vector, int
         out_put_code.append("\n");
 
         out_put_code.append("#ifndef DIST_").append(boost::to_upper_copy(shader->get_name())).append("_INCLUDE\n");
-        out_put_code.append("#define DIST_").append(boost::to_upper_copy(shader->get_name())).append("_INCLUDE\n \n \n");
+        out_put_code.append("#define DIST_").append(boost::to_upper_copy(shader->get_name())).append("_INCLUDE\n");
+        out_put_code.append("#include \"Core.hlsl\"\n");
+        out_put_code.append("\n");
 
         string struct_data_string = "";
         struct_data_string.append("struct ");

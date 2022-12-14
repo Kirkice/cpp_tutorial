@@ -1,4 +1,4 @@
-/* $Header: Assets/Shaders/test                                   11/14/22  20:19:2 KirkZhu $ */
+/* $Header: Assets/Shaders/test                                   11/14/22  20:29:59 KirkZhu $ */
 /*--------------------------------------------------------------------------------------------*
 *                                                                                             *
 *                 Project Name : DistEngine                                                   *
@@ -10,8 +10,8 @@
 
 #ifndef DIST_TEST_INCLUDE
 #define DIST_TEST_INCLUDE
- 
- 
+#include "Core.hlsl"
+
 struct testData
 {
     int                       RenderingType;

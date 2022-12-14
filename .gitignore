@@ -7,3 +7,5 @@
 /property/cmake-build-debug/*
 /analyse_shader/.idea/*
 /analyse_shader/cmake-build-debug/*
+/log_system/.idea/*
+/log_system/cmake-build-debug/*

@@ -11,7 +11,10 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <boost/algorithm/string.hpp>
 #include "Shader.h"
+
+std::string get_header_log(std::string name);
 
 void generate_hlsl_code(std::vector<std::unique_ptr<Shader>>& shader_vector, int register_index);
 

@@ -5,10 +5,14 @@ InputData
     Texture:MainTex = whtie;
     Color:MainColor = white;
     Int:RenderingType = 0;
+    Texture:NormalTex = normal;
+    Float:NormalScale = 1.0;
     Texture:MsoTexture = white;
     Float:Smoothness = 0.5;
     Float:Metallic = 0.0;
     Float:OcclusionStrength = 1.0;
+    Texture:EmissionTex = black;
+    Color:EmissionColor = black;
 }
 ---
 Tags
